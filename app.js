@@ -12,11 +12,7 @@ app.get('/', function(req, res) {
 let data = [];
 
 app.get("/messages", function(req, res) {
-    if (req.query.lastindex < data.length) {
-        data = data.slice(data.length - req.query.lastindex, data.length)
-    }
-    res.json(data);
-
+    res.json(data[req.query.lastindex - 1]);
 })
 
 app.post("/messages", function(req, res) {
@@ -28,7 +24,6 @@ app.post("/messages", function(req, res) {
     data.push(newMessage);
     res.json(newMessage);
 })
-
 
 app.listen(3000, function() {
     console.log("server started");

@@ -2,19 +2,8 @@ $(function() {
     let $messagesView = $('#display_message');
     let $sender = $('#sender');
     let $message = $('#message');
-
-    $.ajax({
-        type: 'GET',
-        url: '/messages?lastindex=5',
-        success: function(messages) {
-            $.each(messages, function(i, message) {
-                $messagesView.append('<p><strong>' + message.sender + ': </strong>' + message.message + '</p>');
-            })
-        },
-        error: function() {
-            alert("There was an error in getting the data");
-        }
-    });
+    let $body = $('#body');
+    let lastIndex = 1;
 
     $('#sendMessage').on('click', function() {
         let fullMessage = {
@@ -27,7 +16,8 @@ $(function() {
             contentType: 'application/json',
             data: JSON.stringify(fullMessage),
             success: function(newMessage) {
-                $messagesView.append('<p><strong>' + newMessage.sender + ': </strong>' + newMessage.message + '</p>');
+                console.log(newMessage.sender + ' added the following message: ' + newMessage.message);
+                lastIndex = newMessage.index;
             },
             error: function() {
                 alert('There was an error in saving the message');
@@ -35,5 +25,19 @@ $(function() {
         })
 
     });
+
+    setInterval(function() {
+        $.ajax({
+            type: 'GET',
+            url: '/messages?lastindex=' + lastIndex,
+            success: function(message) {
+                $messagesView.append('<p><strong>' + message.sender + ': </strong>' + message.message + '</p>');
+                lastIndex += 1;
+            },
+            error: function() {
+                console.log('no new messages to be added');
+            }
+        });
+    }, 1000);
 
 });
